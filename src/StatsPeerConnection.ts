@@ -39,9 +39,9 @@ export default class StatsPeerConnection {
     }: {
       onError?: (error: Error) => void;
       interval?: number;
-    }
+    } = {}
   ) {
-    const collectStatistics = this.resolveCollectStatistics(peerConnection, {
+    const collectStatistics = this._resolveCollectStatistics(peerConnection, {
       onError,
       interval,
     });
@@ -61,7 +61,7 @@ export default class StatsPeerConnection {
     return this.setTimeoutRequest.requested || this.cancelableGetRawStats.requested;
   }
 
-  resolveCollectStatistics = (
+  _resolveCollectStatistics = (
     peerConnection: RTCPeerConnection,
     {
       interval,
