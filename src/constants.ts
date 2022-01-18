@@ -1,0 +1,5 @@
+export const OUTBOUND_AUDIO_TYPE = 'OUTBOUND_AUDIO_TYPE' as const;
+export const INBOUND_AUDIO_TYPE = 'INBOUND_AUDIO_TYPE' as const;
+export const OUTBOUND_VIDEO_TYPE = 'OUTBOUND_VIDEO_TYPE' as const;
+export const INBOUND_VIDEO_TYPE = 'INBOUND_VIDEO_TYPE' as const;
+export const INTERVAL_COLLECT_STATISTICS = 1000;
