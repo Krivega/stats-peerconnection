@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/stats-peerconnection?style=flat-square)](https://www.npmjs.com/package/stats-peerconnection)
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/stats-peerconnection?style=flat-square)
 
-Call promises one by one, ignoring the state (fulfilled or rejected). and returning the collected data in the tuple `{ results, errors }`.
+Collection of statistics from peerConnection
 
 ## Install
 
