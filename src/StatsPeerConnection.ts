@@ -1,4 +1,4 @@
-import CancelableRequest from '@krivega/cancelable-promise/dist/CancelableRequest';
+import { CancelableRequest } from '@krivega/cancelable-promise';
 import Events from 'events-constructor';
 import SetTimeoutRequest from './utils/SetTimeoutRequest';
 import { INTERVAL_COLLECT_STATISTICS } from './constants';
