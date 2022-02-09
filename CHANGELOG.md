@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/Krivega/stats-peerconnection/compare/v0.0.5...v0.0.6) (2022-02-09)
+
 ### [0.0.5](https://github.com/Krivega/stats-peerconnection/compare/v0.0.4...v0.0.5) (2022-01-18)
 
 ### Bug Fixes
