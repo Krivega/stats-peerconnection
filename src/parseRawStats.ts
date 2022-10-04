@@ -1,6 +1,6 @@
 import ParserStatsPeerConnection from './ParserStatsPeerConnection';
 import parserGroupedStatistics from './parserGroupedStatistics';
-import type { TStatistics } from './typings.d';
+import type { TStatistics } from './typings';
 
 const parserStatsPeerConnection = new ParserStatsPeerConnection();
 
@@ -8,7 +8,7 @@ export const reset = () => {
   return parserStatsPeerConnection.reset();
 };
 
-const parseRawStats = (rawStats): TStatistics => {
+const parseRawStats = (rawStats: RTCStatsReport[]): TStatistics => {
   const statistics = parserStatsPeerConnection.getStats(rawStats);
 
   return parserGroupedStatistics(statistics);

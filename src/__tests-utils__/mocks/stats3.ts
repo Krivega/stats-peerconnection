@@ -81,7 +81,7 @@ export const stats3OutboundAudio = {
   type: 'OUTBOUND_AUDIO_TYPE',
   trackIdentifier: 'identifier1',
   values: {
-    timestamp: `${statsResult3OutboundAudio.timestamp}`,
+    timestamp: statsResult3OutboundAudio.timestamp,
     packetsSent: '3909',
     packetsLost: '50',
     percentagePacketsLost: '1.3%',
@@ -96,7 +96,7 @@ export const stats3OutboundVideo = {
   type: 'OUTBOUND_VIDEO_TYPE',
   trackIdentifier: 'identifier2',
   values: {
-    timestamp: `${statsResult3OutboundVideo.timestamp}`,
+    timestamp: statsResult3OutboundVideo.timestamp,
     packetsSent: '10938',
     packetsLost: '100',
     percentagePacketsLost: '0.9%',
@@ -111,7 +111,7 @@ export const stats3InboundAudio = {
   type: 'INBOUND_AUDIO_TYPE',
   trackIdentifier: 'identifier3',
   values: {
-    timestamp: `${statsResult3InboundAudio.timestamp}`,
+    timestamp: statsResult3InboundAudio.timestamp,
     packetsReceived: '3906',
     packetsLost: '300',
     percentagePacketsLost: '7.7%',
@@ -126,7 +126,7 @@ export const stats3InboundVideo = {
   type: 'INBOUND_VIDEO_TYPE',
   trackIdentifier: 'identifier4',
   values: {
-    timestamp: `${statsResult3InboundVideo.timestamp}`,
+    timestamp: statsResult3InboundVideo.timestamp,
     packetsReceived: '15547',
     packetsLost: '990',
     percentagePacketsLost: '6.4%',

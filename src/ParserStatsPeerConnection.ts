@@ -12,7 +12,7 @@ export default class ParserStatsPeerConnection {
     forEachResults(results, this.updateItemStats);
   }
 
-  removeOldStats(rawStats) {
+  removeOldStats(rawStats: RTCStatsReport[]) {
     Object.keys(this.stats).forEach((id) => {
       if (
         !rawStats.some((results: RTCStatsReport) => {
@@ -52,7 +52,7 @@ export default class ParserStatsPeerConnection {
     this.stats = {};
   }
 
-  getStats(rawStats) {
+  getStats(rawStats: RTCStatsReport[]) {
     this.removeOldStats(rawStats);
 
     rawStats.forEach((item) => {

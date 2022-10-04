@@ -1,6 +1,5 @@
 import omitBy from 'lodash/omitBy';
 import mapValues from 'lodash/mapValues';
-import toString from 'lodash/toString';
 import flow from 'lodash/flow';
 import curryRight from 'lodash/curryRight';
 import isUndefined from 'lodash/isUndefined';
@@ -56,8 +55,8 @@ const calcBitrate = ({
 }: {
   currentTimestamp: number;
   lastTimestamp: number;
-  currentBytes: string;
-  lastBytes: string;
+  currentBytes: number;
+  lastBytes: number;
 }): string => {
   const bytes = +currentBytes - +lastBytes;
 
@@ -88,21 +87,30 @@ const hasInvalidValueInfo = (value?: string): boolean => {
 };
 
 const getOnlyValidInfo = curryRight<object, object>(omitBy)(hasInvalidValueInfo);
-// @ts-ignore
-const parseInfo = flow(getOnlyValidInfo, curryRight<object, string>(mapValues)(toString));
+const parseInfo = flow(
+  // @ts-ignore
+  getOnlyValidInfo,
+  curryRight<object, string>(mapValues)((value) => {
+    return value;
+  })
+);
 const emptyInfoStats = {};
 
 type TInfo = {
   timestamp?: number;
-  packetsReceived?: string;
-  packetsSent?: string;
-  packetsLost?: string;
+  packetsReceived?: number;
+  packetsSent?: number;
+  packetsLost?: number;
   percentagePacketsLost?: string;
   percentagePacketsLostRecent?: string;
   codec?: string;
   bitrate?: string;
   resolution?: string;
   decodeDelay?: string;
+  estimatedPlayoutTimestamp?: number;
+  lastPacketReceivedTimestamp?: number;
+  framesReceived?: number;
+  framesDropped?: number;
 };
 
 export default class RTCStreamStatistics {
@@ -112,11 +120,11 @@ export default class RTCStreamStatistics {
 
   trackIdentifier?: string;
 
-  lastPackets?: string;
+  lastPackets?: number;
 
-  lastLost?: string;
+  lastLost?: number;
 
-  lastBytes?: string;
+  lastBytes?: number;
 
   lastTimestamp?: number | null;
 
@@ -152,9 +160,9 @@ export default class RTCStreamStatistics {
   }
 
   init() {
-    this.lastPackets = '0';
-    this.lastLost = '0';
-    this.lastBytes = '0';
+    this.lastPackets = 0;
+    this.lastLost = 0;
+    this.lastBytes = 0;
   }
 
   getStats() {
@@ -217,18 +225,24 @@ export default class RTCStreamStatistics {
     this.updateStateTimestamp(result.timestamp);
   }
 
-  updateInfo({
-    timestamp,
-    packetsReceived,
-    packetsSent,
-    packetsLost,
-    percentagePacketsLost,
-    percentagePacketsLostRecent,
-    codec,
-    bitrate,
-    resolution,
-    decodeDelay,
-  }: TInfo) {
+  updateInfo(info: TInfo) {
+    const {
+      timestamp,
+      packetsReceived,
+      packetsSent,
+      packetsLost,
+      percentagePacketsLost,
+      percentagePacketsLostRecent,
+      codec,
+      bitrate,
+      resolution,
+      decodeDelay,
+      estimatedPlayoutTimestamp,
+      lastPacketReceivedTimestamp,
+      framesDropped,
+      framesReceived,
+    } = info;
+
     return Object.assign(
       this.info,
       parseInfo({
@@ -242,6 +256,10 @@ export default class RTCStreamStatistics {
         bitrate,
         resolution,
         decodeDelay,
+        estimatedPlayoutTimestamp,
+        lastPacketReceivedTimestamp,
+        framesDropped,
+        framesReceived,
       })
     );
   }
@@ -251,15 +269,15 @@ export default class RTCStreamStatistics {
     this.lastTimestamp = timestamp;
   }
 
-  updatePacketLossStats(currentTotal, currentLost) {
+  updatePacketLossStats(currentTotal?: number, currentLost?: number) {
     if (currentTotal === undefined || currentLost === undefined) {
       return undefined;
     }
 
-    const currentTotalParsed = parseInt(currentTotal, 10) || 0;
-    const currentLostParsed = parseInt(currentLost, 10) || 0;
-    const lastPacketsParsed = (this.lastPackets && parseInt(this.lastPackets, 10)) || 0;
-    const lastLostParsed = (this.lastLost && parseInt(this.lastLost, 10)) || 0;
+    const currentTotalParsed = currentTotal || 0;
+    const currentLostParsed = currentLost || 0;
+    const lastPacketsParsed = this.lastPackets || 0;
+    const lastLostParsed = this.lastLost || 0;
 
     this.updateInfo({
       percentagePacketsLost: calcPercentagePacketsLost({
@@ -296,8 +314,8 @@ export default class RTCStreamStatistics {
 
   updateInbound(result) {
     this.updateInfo({
-      packetsReceived: this.getStatProp!('packetsReceived'),
-      packetsLost: this.getStatProp!('packetsLost'),
+      packetsReceived: this.getStatProp!<number>('packetsReceived'),
+      packetsLost: this.getStatProp!<number>('packetsLost'),
       bitrate: 'unavailable',
     });
 
@@ -314,10 +332,14 @@ export default class RTCStreamStatistics {
     this.updateInfo({
       decodeDelay,
       timestamp: result.timestamp,
+      estimatedPlayoutTimestamp: result.estimatedPlayoutTimestamp,
+      lastPacketReceivedTimestamp: result.lastPacketReceivedTimestamp,
+      framesDropped: result.framesDropped,
+      framesReceived: result.framesReceived,
       bitrate: calcBitrate({
         currentTimestamp: result.timestamp,
         lastTimestamp: this.lastTimestamp!,
-        currentBytes: this.getStatProp!<string>('bytesReceived'),
+        currentBytes: this.getStatProp!<number>('bytesReceived'),
         lastBytes: this.lastBytes!,
       }),
       resolution: calcResolution({
@@ -327,15 +349,15 @@ export default class RTCStreamStatistics {
       codec: this.getStatCodecProp!<string>('mimeType'),
     });
 
-    this.lastBytes = this.getStatProp!<string>('bytesReceived');
+    this.lastBytes = this.getStatProp!<number>('bytesReceived');
     this.lastPackets = packetsReceived;
     this.lastLost = packetsLost;
   }
 
   updateOutbound(result) {
     this.updateInfo({
-      packetsSent: this.getStatProp!<string>('packetsSent'),
-      packetsLost: this.getStatProp!<string>('packetsLost'),
+      packetsSent: this.getStatProp!<number>('packetsSent'),
+      packetsLost: this.getStatProp!<number>('packetsLost'),
       bitrate: 'unavailable',
     });
 
@@ -348,7 +370,7 @@ export default class RTCStreamStatistics {
       bitrate: calcBitrate({
         currentTimestamp: result.timestamp,
         lastTimestamp: this.lastTimestamp!,
-        currentBytes: this.getStatProp!<string>('bytesSent'),
+        currentBytes: this.getStatProp!<number>('bytesSent'),
         lastBytes: this.lastBytes!,
       }),
       resolution: calcResolution({
@@ -358,7 +380,7 @@ export default class RTCStreamStatistics {
       codec: this.getStatCodecProp!<string>('mimeType'),
     });
 
-    this.lastBytes = this.getStatProp!<string>('bytesSent');
+    this.lastBytes = this.getStatProp!<number>('bytesSent');
     this.lastPackets = packetsSent;
     this.lastLost = packetsLost;
   }

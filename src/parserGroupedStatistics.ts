@@ -6,24 +6,30 @@ import {
   OUTBOUND_VIDEO_TYPE,
   INBOUND_VIDEO_TYPE,
 } from './constants';
-import type { TStatistics } from './typings.d';
+import type { TStatistics } from './typings';
 
-/**
- * resolveParserPropsStatistics
- * @param {array} availableStatictics availableStatictics
- * @returns {Object} resolveParserPropsStatistics
- */
-const resolveParserPropsStatistics = (availableStatictics) => {
-  return ({ id, type, trackIdentifier, values }) => {
-    const parsedValues = availableStatictics
-      .filter((key) => {
-        return values[key] !== undefined;
-      })
+const resolveParserPropsStatistics = (availableStatistics: string[]) => {
+  return ({
+    id,
+    type,
+    trackIdentifier,
+    values,
+  }: {
+    id: string;
+    type: string;
+    trackIdentifier: string;
+    values: { key: string; value: string | number }[];
+  }) => {
+    const parsedValues = availableStatistics
+
       .map((key) => {
         return {
           key,
           value: values[key],
         };
+      })
+      .filter((stats) => {
+        return stats.value !== undefined;
       });
 
     if (parsedValues.length === 0) {
@@ -48,6 +54,10 @@ const parserInboundStatistics = resolveParserPropsStatistics([
   'codec',
   'bitrate',
   'resolution',
+  'estimatedPlayoutTimestamp',
+  'lastPacketReceivedTimestamp',
+  'framesReceived',
+  'framesDropped',
 ]);
 
 const parserOutboundStatistics = resolveParserPropsStatistics([

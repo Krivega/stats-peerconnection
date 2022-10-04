@@ -5,7 +5,7 @@ import { INTERVAL_COLLECT_STATISTICS } from './constants';
 import { EVENT_NAMES, COLLECTED_EVENT } from './eventNames';
 import getRawStats from './getRawStats';
 import parserRawStats, { reset } from './parseRawStats';
-import type { TStatistics } from './typings.d';
+import type { TStatistics } from './typings';
 
 const debug = (data: any) => {
   // eslint-disable-next-line no-console
