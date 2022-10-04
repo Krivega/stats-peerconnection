@@ -128,7 +128,7 @@ export default class RTCStreamStatistics {
 
   samples: any[] = [];
 
-  info?: TInfo;
+  info: TInfo = {};
 
   getStatProp?: ReturnType<typeof resolveGetStatProp>;
 
@@ -155,12 +155,6 @@ export default class RTCStreamStatistics {
     this.lastPackets = '0';
     this.lastLost = '0';
     this.lastBytes = '0';
-    this.lastTimestamp = null;
-    this.prevTimestamp = null;
-    this.recentTotal = 0;
-    this.recentLost = 0;
-    this.samples = [];
-    this.info = {};
   }
 
   getStats() {
