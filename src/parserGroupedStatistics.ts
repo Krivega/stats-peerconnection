@@ -6,7 +6,7 @@ import {
   OUTBOUND_VIDEO_TYPE,
   INBOUND_VIDEO_TYPE,
 } from './constants';
-import type { TStatistics } from './typings';
+import type { TStatistics, TSynchronizationSources } from './typings';
 
 const resolveParserPropsStatistics = (availableStatistics: string[]) => {
   return ({
@@ -58,6 +58,11 @@ const parserInboundStatistics = resolveParserPropsStatistics([
   'lastPacketReceivedTimestamp',
   'framesReceived',
   'framesDropped',
+  'jitter',
+  'packetsDiscarded',
+  'totalSamplesReceived',
+  'insertedSamplesForDeceleration',
+  'removedSamplesForAcceleration',
 ]);
 
 const parserOutboundStatistics = resolveParserPropsStatistics([
@@ -91,12 +96,10 @@ const parserGroupedStatisticsItem = (items, parser) => {
     });
 };
 
-/**
- * parserGroupedStatistics
- * @param {array} statistics statistics
- * @returns {Object|undefined} parserGroupedStatistics
- */
-const parserGroupedStatistics = (statistics): TStatistics => {
+const parserGroupedStatistics = (
+  statistics,
+  synchronizationSources: TSynchronizationSources
+): TStatistics => {
   if (!statistics || statistics.length === 0) {
     return undefined;
   }
@@ -104,22 +107,32 @@ const parserGroupedStatistics = (statistics): TStatistics => {
   const groupedStatistics = groupBy(statistics, 'type');
 
   return {
-    [OUTBOUND_AUDIO_TYPE]: parserGroupedStatisticsItem(
-      groupedStatistics[OUTBOUND_AUDIO_TYPE],
-      parserOutboundStatistics
-    ),
-    [INBOUND_AUDIO_TYPE]: parserGroupedStatisticsItem(
-      groupedStatistics[INBOUND_AUDIO_TYPE],
-      parserInboundStatistics
-    ),
-    [OUTBOUND_VIDEO_TYPE]: parserGroupedStatisticsItem(
-      groupedStatistics[OUTBOUND_VIDEO_TYPE],
-      parserOutboundStatistics
-    ),
-    [INBOUND_VIDEO_TYPE]: parserGroupedStatisticsItem(
-      groupedStatistics[INBOUND_VIDEO_TYPE],
-      parserInboundStatistics
-    ),
+    [OUTBOUND_AUDIO_TYPE]: {
+      groupedStatistics: parserGroupedStatisticsItem(
+        groupedStatistics[OUTBOUND_AUDIO_TYPE],
+        parserOutboundStatistics
+      ),
+    },
+    [INBOUND_AUDIO_TYPE]: {
+      groupedStatistics: parserGroupedStatisticsItem(
+        groupedStatistics[INBOUND_AUDIO_TYPE],
+        parserInboundStatistics
+      ),
+      synchronizationSources: synchronizationSources.audio,
+    },
+    [OUTBOUND_VIDEO_TYPE]: {
+      groupedStatistics: parserGroupedStatisticsItem(
+        groupedStatistics[OUTBOUND_VIDEO_TYPE],
+        parserOutboundStatistics
+      ),
+    },
+    [INBOUND_VIDEO_TYPE]: {
+      groupedStatistics: parserGroupedStatisticsItem(
+        groupedStatistics[INBOUND_VIDEO_TYPE],
+        parserInboundStatistics
+      ),
+      synchronizationSources: synchronizationSources.video,
+    },
   };
 };
 

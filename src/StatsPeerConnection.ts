@@ -3,9 +3,9 @@ import Events from 'events-constructor';
 import SetTimeoutRequest from './utils/SetTimeoutRequest';
 import { INTERVAL_COLLECT_STATISTICS } from './constants';
 import { EVENT_NAMES, COLLECTED_EVENT } from './eventNames';
-import getRawStats from './getRawStats';
-import parserRawStats, { reset } from './parseRawStats';
-import type { TStatistics } from './typings';
+import getStatsReports from './getStatsReports';
+import parseStatsReports, { reset } from './parseStatsReports';
+import type { TStatistics, TSynchronizationSources } from './typings';
 
 const debug = (data: any) => {
   // eslint-disable-next-line no-console
@@ -17,18 +17,18 @@ export default class StatsPeerConnection {
 
   setTimeoutRequest: SetTimeoutRequest;
 
-  cancelableGetRawStats: CancelableRequest<
-    Parameters<typeof getRawStats>[0],
-    ReturnType<typeof getRawStats>
+  cancelableGetStatsReports: CancelableRequest<
+    Parameters<typeof getStatsReports>[0],
+    ReturnType<typeof getStatsReports>
   >;
 
   constructor() {
     this._events = new Events<typeof EVENT_NAMES>(EVENT_NAMES);
     this.setTimeoutRequest = new SetTimeoutRequest();
-    this.cancelableGetRawStats = new CancelableRequest<
-      Parameters<typeof getRawStats>[0],
-      ReturnType<typeof getRawStats>
-    >(getRawStats);
+    this.cancelableGetStatsReports = new CancelableRequest<
+      Parameters<typeof getStatsReports>[0],
+      ReturnType<typeof getStatsReports>
+    >(getStatsReports);
   }
 
   start(
@@ -54,11 +54,11 @@ export default class StatsPeerConnection {
 
   stop() {
     this.setTimeoutRequest.cancelRequest();
-    this.cancelableGetRawStats.cancelRequest();
+    this.cancelableGetStatsReports.cancelRequest();
   }
 
   get requested(): boolean {
-    return this.setTimeoutRequest.requested || this.cancelableGetRawStats.requested;
+    return this.setTimeoutRequest.requested || this.cancelableGetStatsReports.requested;
   }
 
   _resolveCollectStatistics = (
@@ -72,10 +72,19 @@ export default class StatsPeerConnection {
     }
   ) => {
     return () => {
-      return this.cancelableGetRawStats
-        .request(peerConnection)
-        .then((rawStats) => {
-          this._events.trigger(COLLECTED_EVENT, parserRawStats(rawStats));
+      const senders = peerConnection.getSenders();
+      const receivers = peerConnection.getReceivers();
+      const synchronizationSources = receivers.reduce((acc, receiver) => {
+        const items = receiver.getSynchronizationSources();
+        const trackIdentifier = receiver.track.id;
+
+        return { ...acc, [receiver.track.kind]: { trackIdentifier, items } };
+      }, {} as TSynchronizationSources);
+
+      return this.cancelableGetStatsReports
+        .request({ senders, receivers })
+        .then((reports) => {
+          this._events.trigger(COLLECTED_EVENT, parseStatsReports(reports, synchronizationSources));
           this.start(peerConnection, {
             onError,
             interval,

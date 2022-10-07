@@ -111,6 +111,11 @@ type TInfo = {
   lastPacketReceivedTimestamp?: number;
   framesReceived?: number;
   framesDropped?: number;
+  jitter?: number;
+  packetsDiscarded?: number;
+  totalSamplesReceived?: number;
+  insertedSamplesForDeceleration?: number;
+  removedSamplesForAcceleration?: number;
 };
 
 export default class RTCStreamStatistics {
@@ -241,6 +246,11 @@ export default class RTCStreamStatistics {
       lastPacketReceivedTimestamp,
       framesDropped,
       framesReceived,
+      jitter,
+      packetsDiscarded,
+      totalSamplesReceived,
+      insertedSamplesForDeceleration,
+      removedSamplesForAcceleration,
     } = info;
 
     return Object.assign(
@@ -260,6 +270,11 @@ export default class RTCStreamStatistics {
         lastPacketReceivedTimestamp,
         framesDropped,
         framesReceived,
+        jitter,
+        packetsDiscarded,
+        totalSamplesReceived,
+        insertedSamplesForDeceleration,
+        removedSamplesForAcceleration,
       })
     );
   }
@@ -336,6 +351,11 @@ export default class RTCStreamStatistics {
       lastPacketReceivedTimestamp: result.lastPacketReceivedTimestamp,
       framesDropped: result.framesDropped,
       framesReceived: result.framesReceived,
+      jitter: result.jitter,
+      packetsDiscarded: result.packetsDiscarded,
+      totalSamplesReceived: result.totalSamplesReceived,
+      insertedSamplesForDeceleration: result.insertedSamplesForDeceleration,
+      removedSamplesForAcceleration: result.removedSamplesForAcceleration,
       bitrate: calcBitrate({
         currentTimestamp: result.timestamp,
         lastTimestamp: this.lastTimestamp!,

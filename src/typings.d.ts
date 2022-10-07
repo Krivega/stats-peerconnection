@@ -5,6 +5,11 @@ import {
   INBOUND_VIDEO_TYPE,
 } from './constants';
 
+export type TSynchronizationSources = {
+  audio: { trackIdentifier: string; items: RTCRtpSynchronizationSource[] };
+  video: { trackIdentifier: string; items: RTCRtpSynchronizationSource[] };
+};
+
 export type TStatistics =
   | {
       [OUTBOUND_AUDIO_TYPE]: any;
