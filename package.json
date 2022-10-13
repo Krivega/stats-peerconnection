@@ -1,6 +1,6 @@
 {
   "name": "stats-peerconnection",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "sequentPromises resolves Promises sequentially",
   "keywords": [
     "promise"
