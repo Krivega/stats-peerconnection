@@ -12,6 +12,9 @@ const debug = (data: any) => {
   console.log('StatsPeerConnection', data);
 };
 
+const now = (): number => {
+  return (performance || Date).now();
+};
 export default class StatsPeerConnection {
   _events: Events<typeof EVENT_NAMES>;
 
@@ -43,7 +46,6 @@ export default class StatsPeerConnection {
   ) {
     const collectStatistics = this._resolveCollectStatistics(peerConnection, {
       onError,
-      interval,
     });
 
     this.stop();
@@ -64,14 +66,13 @@ export default class StatsPeerConnection {
   _resolveCollectStatistics = (
     peerConnection: RTCPeerConnection,
     {
-      interval,
       onError,
     }: {
-      interval?: number;
       onError?: (error: Error) => void;
     }
   ) => {
     return () => {
+      const startTime = now();
       const senders = peerConnection.getSenders();
       const receivers = peerConnection.getReceivers();
       const synchronizationSources = receivers.reduce((acc, receiver) => {
@@ -85,6 +86,20 @@ export default class StatsPeerConnection {
         .request({ senders, receivers })
         .then((reports) => {
           this._events.trigger(COLLECTED_EVENT, parseStatsReports(reports, synchronizationSources));
+
+          const endTime = now();
+          const elapsed = endTime - startTime;
+
+          let interval = INTERVAL_COLLECT_STATISTICS;
+
+          if (elapsed > 48) {
+            interval = INTERVAL_COLLECT_STATISTICS * 4;
+          } else if (elapsed > 32) {
+            interval = INTERVAL_COLLECT_STATISTICS * 3;
+          } else if (elapsed > 16) {
+            interval = INTERVAL_COLLECT_STATISTICS * 2;
+          }
+
           this.start(peerConnection, {
             onError,
             interval,
