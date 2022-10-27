@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.2](https://github.com/Krivega/stats-peerconnection/compare/v0.2.1...v0.2.2) (2022-10-27)
+
+### Features
+
+- add some metrics ([103a4e0](https://github.com/Krivega/stats-peerconnection/commit/103a4e0c5357601e4d96a58666bcc662d6bd28e3))
+
 ### [0.2.1](https://github.com/Krivega/stats-peerconnection/compare/v0.2.0...v0.2.1) (2022-10-13)
 
 ### Bug Fixes
