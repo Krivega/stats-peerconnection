@@ -74,6 +74,15 @@ const parserOutboundStatistics = resolveParserPropsStatistics([
   'codec',
   'bitrate',
   'resolution',
+  'retransmittedBytesSent',
+  'retransmittedPacketsSent',
+  'qualityLimitationReason',
+  'qualityLimitationResolutionChanges',
+  'bandwidth',
+  'encoderImplementation',
+  'totalPacketSendDelay',
+  'totalEncodedBytesTarget',
+  'totalEncodeTime',
 ]);
 
 /**

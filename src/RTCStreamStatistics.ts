@@ -116,6 +116,15 @@ type TInfo = {
   totalSamplesReceived?: number;
   insertedSamplesForDeceleration?: number;
   removedSamplesForAcceleration?: number;
+  retransmittedBytesSent?: number;
+  retransmittedPacketsSent?: number;
+  qualityLimitationReason?: string;
+  qualityLimitationResolutionChanges?: number;
+  bandwidth?: number;
+  encoderImplementation?: string;
+  totalPacketSendDelay?: number;
+  totalEncodedBytesTarget?: number;
+  totalEncodeTime?: number;
 };
 
 export default class RTCStreamStatistics {
@@ -251,6 +260,15 @@ export default class RTCStreamStatistics {
       totalSamplesReceived,
       insertedSamplesForDeceleration,
       removedSamplesForAcceleration,
+      retransmittedBytesSent,
+      retransmittedPacketsSent,
+      qualityLimitationReason,
+      qualityLimitationResolutionChanges,
+      bandwidth,
+      encoderImplementation,
+      totalPacketSendDelay,
+      totalEncodedBytesTarget,
+      totalEncodeTime,
     } = info;
 
     return Object.assign(
@@ -275,6 +293,15 @@ export default class RTCStreamStatistics {
         totalSamplesReceived,
         insertedSamplesForDeceleration,
         removedSamplesForAcceleration,
+        retransmittedBytesSent,
+        retransmittedPacketsSent,
+        qualityLimitationReason,
+        qualityLimitationResolutionChanges,
+        bandwidth,
+        encoderImplementation,
+        totalPacketSendDelay,
+        totalEncodedBytesTarget,
+        totalEncodeTime,
       })
     );
   }
@@ -387,6 +414,15 @@ export default class RTCStreamStatistics {
 
     this.updateInfo({
       timestamp: result.timestamp,
+      retransmittedBytesSent: result.retransmittedBytesSent,
+      retransmittedPacketsSent: result.retransmittedPacketsSent,
+      qualityLimitationReason: result.qualityLimitationReason,
+      qualityLimitationResolutionChanges: result.qualityLimitationResolutionChanges,
+      bandwidth: result.bandwidth,
+      encoderImplementation: result.encoderImplementation,
+      totalPacketSendDelay: result.totalPacketSendDelay,
+      totalEncodedBytesTarget: result.totalEncodedBytesTarget,
+      totalEncodeTime: result.totalEncodeTime,
       bitrate: calcBitrate({
         currentTimestamp: result.timestamp,
         lastTimestamp: this.lastTimestamp!,
